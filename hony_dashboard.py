@@ -221,7 +221,7 @@ with st.sidebar:
 
     # Simple, intuitive (no misleading accuracy)
     st.metric("Model performance", "Moderate")
-    st.caption("“The model is moderately good, but virality is still hard to predict.")
+    st.caption("The model is moderately good, but virality is still hard to predict.")
 
     st.divider()
     st.caption("Built with scikit-learn + XGBoost")
