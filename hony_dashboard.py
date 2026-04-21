@@ -36,7 +36,7 @@ from pathlib import Path
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="HONY Engagement Analytics",
-    page_icon="📸",
+    page_icon="HONY",
     layout="wide",
     initial_sidebar_state="expanded",
 )
