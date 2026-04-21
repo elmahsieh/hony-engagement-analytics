@@ -221,7 +221,7 @@ with st.sidebar:
 
     # Simple, intuitive (no misleading accuracy)
     st.metric("Model performance", "Moderate")
-    st.caption("The model is moderately good, but virality is still hard to predict.")
+    st.caption("The model is moderately good, but virality is still hard to predict. (F1 Macro ~0.47)")
 
     st.divider()
     st.caption("Built with scikit-learn + XGBoost")
@@ -331,32 +331,43 @@ with tabs[0]:
                 # Probability gauge
                 prob_df = pd.DataFrame({
                     "Tier": TIER_ORDER,
-                    "Probability": pred_probs,
+                    "Probability": pred_probs * 100,
                     "Color": [TIER_COLORS[t] for t in TIER_ORDER],
                 })
                 fig = px.bar(
-                    prob_df, x="Probability", y="Tier",
-                    orientation="h", color="Tier",
+                    prob_df,
+                    x="Probability",
+                    y="Tier",
+                    orientation="h",
+                    color="Tier",
                     color_discrete_map=TIER_COLORS,
-                    range_x=[0, 1],
-                    labels={"Probability": "P(tier)"},
+                    range_x=[0, 100],
+                    labels={
+                        "Probability": "Likelihood (%)",
+                        "Tier": "Engagement level",
+                    },
                     height=200,
                 )
                 fig.update_layout(
-                    showlegend=False, margin=dict(l=0, r=10, t=10, b=10),
-                    plot_bgcolor="white", paper_bgcolor="white",
+                    showlegend=False,
+                    margin=dict(l=0, r=10, t=10, b=10),
+                    plot_bgcolor="white",
+                    paper_bgcolor="white",
                     yaxis=dict(categoryorder="array", categoryarray=TIER_ORDER),
                 )
-                fig.update_traces(texttemplate="%{x:.2f}", textposition="outside")
+                fig.update_traces(texttemplate="%{x:.0f}%", textposition="outside")
                 st.plotly_chart(fig, use_container_width=True)
 
                 # Text-derived feature summary
                 wc = len(post_text.split())
                 st.markdown("**Auto-detected features:**")
-                feat_cols = st.columns(3)
+
+                feat_cols = st.columns(2)
+
                 feat_cols[0].metric("Word count", wc)
-                feat_cols[1].metric("VADER compound", f"{_vs['compound']:.2f}")
-                feat_cols[2].metric("Tone", sent_lbl)
+
+                feat_cols[1].metric("Tone", sent_lbl)
+                st.caption(f"Intensity: {_vs['compound']:.0%}")
 
                 st.markdown(
                     '<div class="disclaimer">⚠️ Regression predicts log(note_count). '
@@ -386,8 +397,16 @@ with tabs[1]:
     k1, k2, k3, k4 = st.columns(4)
     k1.metric("Total posts", f"{len(df_preds):,}")
     k2.metric("Median notes", f"{df_preds['note_count'].median():,.0f}")
-    k3.metric("Classifier accuracy", f"{df_preds['correct_cls'].mean():.1%}")
-    k4.metric("Viral posts", f"{(df_preds['tier']=='Viral').sum()}")
+    k3.metric(
+        "Model performance",
+        "Moderate",
+        help="Based on validation results. Best classifier achieved 0.47 F1 across engagement tiers; viral posts are the hardest to predict."
+    )
+    k4.metric(
+        "Viral posts",
+        f"{(df_preds['tier'] == 'Viral').sum()}",
+        help="‘Viral’ is the highest engagement tier in this project. Posts are grouped into four tiers based on note_count, and Viral represents the top-performing ~15% of posts in the dataset."
+    )
 
     st.divider()
 
