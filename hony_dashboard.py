@@ -36,7 +36,7 @@ from pathlib import Path
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="HONY Engagement Analytics",
-    page_icon="📊",
+    page_icon="📸",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -318,7 +318,7 @@ with tabs[0]:
                 pred_notes_est = int(np.expm1(pred_log))
 
                 st.subheader("Prediction Result")
-                st.markdown(f"**Predicted tier:** {tier_badge_html(pred_tier)}",
+                st.markdown(f"**Likely Engagement:** {tier_badge_html(pred_tier)}",
                             unsafe_allow_html=True)
 
                 st.metric("Estimated engagement (notes)", f"~{pred_notes_est:,}",
