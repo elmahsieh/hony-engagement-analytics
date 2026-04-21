@@ -219,25 +219,9 @@ with st.sidebar:
     st.markdown("**Dataset**")
     st.info(f"📂 {len(df_preds):,} posts  |  2015–2024")
 
-    from sklearn.metrics import f1_score
-
-    tier_to_idx = {t: i for i, t in enumerate(TIER_ORDER)}
-
-    y_true = df_preds["tier"].map(tier_to_idx)
-    y_pred = df_preds["pred_tier"].map(tier_to_idx)
-
-    f1_macro = f1_score(y_true, y_pred, average="macro")
-
-    st.metric("Model performance", f"{f1_macro:.2f} (F1)")
-    st.caption("Moderate performance across engagement tiers")
-
-    f1_per_class = f1_score(y_true, y_pred, average=None)
-
-    st.markdown("**Per-tier performance:**")
-    for tier, score in zip(TIER_ORDER, f1_per_class):
-        st.write(f"{tier}: {score:.2f}")
-
-    st.caption("Strong on low-engagement posts, weaker on viral content")
+    # Simple, intuitive (no misleading accuracy)
+    st.metric("Model performance", "Moderate")
+    st.caption("“The model is moderately good, but virality is still hard to predict.")
 
     st.divider()
     st.caption("Built with scikit-learn + XGBoost")
