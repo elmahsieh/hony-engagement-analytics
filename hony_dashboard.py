@@ -32,6 +32,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from pathlib import Path
+from sklearn.metrics import f1_score
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -217,11 +218,29 @@ with st.sidebar:
 
     st.markdown("**Dataset**")
     st.info(f"📂 {len(df_preds):,} posts  |  2015–2024")
-    overall_acc = df_preds["correct_cls"].mean()
-    st.metric("Overall accuracy", f"{overall_acc:.1%}")
-    st.divider()
 
-    st.caption("Phase 3 of 3 · Built with scikit-learn + XGBoost")
+    from sklearn.metrics import f1_score
+
+    tier_to_idx = {t: i for i, t in enumerate(TIER_ORDER)}
+
+    y_true = df_preds["tier"].map(tier_to_idx)
+    y_pred = df_preds["pred_tier"].map(tier_to_idx)
+
+    f1_macro = f1_score(y_true, y_pred, average="macro")
+
+    st.metric("Model performance", f"{f1_macro:.2f} (F1)")
+    st.caption("Moderate performance across engagement tiers")
+
+    f1_per_class = f1_score(y_true, y_pred, average=None)
+
+    st.markdown("**Per-tier performance:**")
+    for tier, score in zip(TIER_ORDER, f1_per_class):
+        st.write(f"{tier}: {score:.2f}")
+
+    st.caption("Strong on low-engagement posts, weaker on viral content")
+
+    st.divider()
+    st.caption("Built with scikit-learn + XGBoost")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
