@@ -1,0 +1,69 @@
+==============================================================
+HONY Phase 2 — Model Performance Summary
+==============================================================
+
+CLASSIFICATION  (target: tier — Low / Mid / High / Viral)
+--------------------------------------------------
+  Logistic Regression
+    CV  F1-Macro : 0.3947 ± 0.0043
+    Test F1-Macro: 0.4143
+      Low  : P=0.613  R=0.760  F1=0.679  n=100
+      Mid  : P=0.443  R=0.250  F1=0.320  n=140
+      High : P=0.384  R=0.330  F1=0.355  n=100
+      Viral: P=0.234  R=0.433  F1=0.304  n=60
+
+  Random Forest
+    CV  F1-Macro : 0.3920 ± 0.0404
+    Test F1-Macro: 0.4325
+      Low  : P=0.755  R=0.710  F1=0.732  n=100
+      Mid  : P=0.443  R=0.586  F1=0.505  n=140
+      High : P=0.360  R=0.400  F1=0.379  n=100
+      Viral: P=0.400  R=0.067  F1=0.114  n=60
+
+  XGBoost  ← BEST
+    CV  F1-Macro : 0.3903 ± 0.0357
+    Test F1-Macro: 0.4705
+      Low  : P=0.750  R=0.720  F1=0.735  n=100
+      Mid  : P=0.461  R=0.550  F1=0.502  n=140
+      High : P=0.366  R=0.410  F1=0.387  n=100
+      Viral: P=0.440  R=0.183  F1=0.259  n=60
+
+REGRESSION  (target: log_notes)
+--------------------------------------------------
+  Ridge
+    RMSE : 0.7775
+    R²   : 0.3841
+
+  Random Forest  ← BEST
+    RMSE : 0.7480
+    R²   : 0.4300
+
+  XGBoost
+    RMSE : 0.7591
+    R²   : 0.4129
+
+FEATURE SET
+--------------------------------------------------
+  22 features used: word_count, sentence_count, avg_sentence_length, paragraph_count, question_count, exclaim_count, quote_count, dialogue_ratio, first_person_ratio, uppercase_ratio, vs_compound, vs_pos, vs_neg, vs_neu, sentiment_enc, entity_count, dominant_topic, topic_enc, topic_confidence, hour, dayofweek, month
+  'year' excluded — temporal confound (platform decay 2016→2022).
+
+DISCLAIMER
+--------------------------------------------------
+  Regression targets log(note_count) for numerical stability.
+  Raw note_count is right-skewed with extreme viral outliers;
+  direct regression on it is unreliable. Back-transform predictions
+  via exp(pred_log_notes) − 1 for approximate raw counts only.
+  Treat regression outputs as engagement signals, not exact counts.
+
+OUTPUTS
+--------------------------------------------------
+  11_classification_comparison.png
+  12_confusion_matrix.png
+  13_regression_comparison.png
+  14_feature_importance.png
+  15_regression_residuals.png
+  hony_classifier.pkl
+  hony_regressor.pkl
+  hony_predictions.csv
+  model_performance_summary.txt
+==============================================================
